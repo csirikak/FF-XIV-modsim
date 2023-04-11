@@ -2,19 +2,18 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <thread>
-#include <mutex>
 #include <condition_variable>
-#include <queue>
-#include <functional>
 
+// Define a constant array of unsigned char to be searched for in memory
 const unsigned char list_start[13] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x95, 0x01, 0x95, 0x01};
 
+// Define a structure to represent a chunk of memory
 struct MemoryChunk {    
     ULONGLONG baseAddress;
     SIZE_T size;
 };
 
+// Define a function to enable/disable a privilege for the current process token.
 BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege) {
     TOKEN_PRIVILEGES tp;
     LUID luid;
@@ -38,6 +37,7 @@ BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege) {
     return TRUE;
 }
 
+// Define a function to search for the specified byte pattern in the memory chunk provided.
 void searchMemory(HANDLE hProcess, const unsigned char (&list_start)[13], const MemoryChunk& chunk) {
     //std::cout << "Searching memory from 0x" << std::hex << chunk.baseAddress << " to 0x" << chunk.baseAddress + chunk.size << std::endl;
     char* pBuffer = new char[chunk.size];
@@ -61,11 +61,12 @@ int main(int argc, char* argv[]) {
     DWORD pid = std::atoi(argv[1]);
 
     HANDLE hToken = NULL;
+    // Get the process token for the current process.
     if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken)) {
         std::cout << "Error: OpenProcessToken failed, Error code: " << GetLastError() << std::endl;
         return 1;
     }
-
+    // Set the priviledge of the current process.
     if (!SetPrivilege(hToken, SE_DEBUG_NAME, TRUE)) {
         std::cout << "Error: SetPrivilege failed, Error code: " << GetLastError() << std::endl;
         CloseHandle(hToken);
@@ -74,7 +75,7 @@ int main(int argc, char* argv[]) {
 
     CloseHandle(hToken);
 
-
+    // Creates a handle to the target process
     HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
     if (hProcess == NULL) {
         std::cout << "Error: OpenProcess failed, Error code: " << GetLastError() << std::endl;
@@ -84,6 +85,7 @@ int main(int argc, char* argv[]) {
     SYSTEM_INFO sysInfo;
     GetSystemInfo(&sysInfo);
 
+    //Creates a Vector of memory chunks to be searched. 
     std::vector<MemoryChunk> memoryChunks;
     ULONGLONG dwAddress = 0;
     while (dwAddress < (ULONGLONG)sysInfo.lpMaximumApplicationAddress) {
@@ -99,8 +101,9 @@ int main(int argc, char* argv[]) {
         }
         dwAddress = (ULONGLONG)memInfo.BaseAddress + memInfo.RegionSize;
     }
-    // Create threads to search memory in parallel
 
+
+    //Iterates through the vector of chunks.
     for (int i = 0; i < memoryChunks.size(); i++) {
         searchMemory(hProcess, list_start, memoryChunks[i]);
     }
