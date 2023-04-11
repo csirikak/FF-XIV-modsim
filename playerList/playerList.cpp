@@ -2,17 +2,14 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <mutex>
-#include <condition_variable>
-#include <queue>
-#include <functional>
 #include <sstream>
 #include <iomanip>
 #include <cstdint>
 
+//Define a constant char array to find empty lines.
 const unsigned char empty_line[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-
+//A function to parse a runtime arg as a ULONGLONG for the pointer type
 ULONGLONG parseHexArgument(const char* arg)
 {
     // Create an input string stream from the argument
@@ -31,8 +28,7 @@ ULONGLONG parseHexArgument(const char* arg)
     return value;
 }
 
-// Example usage
-
+// Define a function to enable/disable a privilege for the current process token.
 BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege) {
     TOKEN_PRIVILEGES tp;
     LUID luid;
@@ -56,26 +52,29 @@ BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege) {
     return TRUE;
 }
 
-
+//Prints the list of player names given the memory address
 void printList(HANDLE hProcess, ULONGLONG memAddressLocation){
-    char* pBuffer = new char[32768];
+    char* pBuffer = new char[65536];
     SIZE_T bytesRead = 0;
     std::cout << "Printing list at: 0x" << std::hex << std::setw(16) << std::setfill('0') << memAddressLocation << std::endl;
-    if (ReadProcessMemory(hProcess, (LPCVOID)memAddressLocation, pBuffer, 32768, &bytesRead)) {
+    if (ReadProcessMemory(hProcess, (LPCVOID)memAddressLocation, pBuffer, 65536, &bytesRead)) {
+        //Offset the initial output by 21 bytes
         for (ULONGLONG i = 21; i < bytesRead; i++) {
             char* outputPtr = &pBuffer[i];
+            //Stops on meeting an empty line
             if (!memcmp(&pBuffer[i], empty_line, 16)){
                 i = bytesRead;
                 std::cout << "EOL";
             }
             else {
+                //Ends name output when meeting '\0'
                 while (*outputPtr != '\0')
                 {
                     std::cout << *outputPtr;
                     outputPtr++;
                 }
                 std::cout << std::endl;
-                i+=95;
+                i+=95; //Offset by 95 bytes to the next name
             }
         }
     }
