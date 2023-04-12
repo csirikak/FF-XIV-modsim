@@ -6,7 +6,8 @@ locationSearchPath = '..\playerList\locationSearch.exe'
 playerListPath = '..\playerList\playerList.exe'
 playerCountPath = '..\playerList\playerCount.exe'
 
-PID = queuelib.get_pid_by_name('ffxiv_dx11.exe')
+PID = str(queuelib.get_pid_by_name('ffxiv_dx11.exe'))
+print(PID)
 
 def startcollecting():
     locationSearchOutput = str(queuelib.run_executable(locationSearchPath, [PID]))
