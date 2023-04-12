@@ -5,6 +5,7 @@ import numpy as np
 import pyautogui
 import subprocess
 import time
+import psutil
 
 pytesseract.pytesseract.tesseract_cmd = r'E:/Program Files (x86)/Tesseract-OCR/tesseract.exe'
 
@@ -168,7 +169,20 @@ def login(sleeptime=1):
     enter_password('Thisissquareenix-2020')
     waitscreen('homescreen',[1217, 685])
     
+def get_pid_by_name(process_name):
+    """
+    Get the PID of a process by its name in Windows.
     
+    Args:
+        process_name (str): The name of the process to search for.
+    
+    Returns:
+        int: The PID of the process if found, None otherwise.
+    """
+    for proc in psutil.process_iter(['pid', 'name']):
+        if proc.info['name'].lower() == process_name.lower():
+            return proc.info['pid']
+    return None
 
 #findcursor()
 #letslopp()
