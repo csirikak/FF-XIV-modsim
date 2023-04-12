@@ -6,7 +6,28 @@ import pyautogui
 import subprocess
 import time
 
-pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'E:/Program Files (x86)/Tesseract-OCR/tesseract.exe'
+
+def run_executable(executable_path, arguments):
+    """
+    Runs an executable with the given arguments.
+    :param executable_path: Path to the executable file.
+    :param arguments: List of arguments to pass to the executable.
+    :return: Output and error messages as a tuple (stdout, stderr).
+    """
+    try:
+        # Run the executable with the arguments
+        process = subprocess.Popen([executable_path] + arguments, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate()
+
+        # Decode stdout and stderr from bytes to string
+        stdout = stdout.decode('utf-8')
+        stderr = stderr.decode('utf-8')
+
+        return stdout, stderr
+    except Exception as e:
+        print(f"Error: {e}")
+
 
 def read_string_from_file(file_path):
     try:

@@ -5,7 +5,10 @@
 #include <condition_variable>
 
 // Define a constant array of unsigned char to be searched for in memory
-const unsigned char list_start[13] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x95, 0x01, 0x95, 0x01};
+const unsigned char list_start[13] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x95, 0x01, 0x95, 0x01}; //Seraph
+const unsigned char count_start[4] = {0x2F, 0x32, 0x30, 0x30};
+bool playerList = FALSE;
+bool playerCount = FALSE;
 
 // Define a structure to represent a chunk of memory
 struct MemoryChunk {    
@@ -38,14 +41,23 @@ BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege) {
 }
 
 // Define a function to search for the specified byte pattern in the memory chunk provided.
-void searchMemory(HANDLE hProcess, const unsigned char (&list_start)[13], const MemoryChunk& chunk) {
+void searchMemory(HANDLE hProcess, const unsigned char (&list_start)[13], const unsigned char (&count_start)[4], const MemoryChunk& chunk) {
     //std::cout << "Searching memory from 0x" << std::hex << chunk.baseAddress << " to 0x" << chunk.baseAddress + chunk.size << std::endl;
     char* pBuffer = new char[chunk.size];
     SIZE_T bytesRead = 0;
     if (ReadProcessMemory(hProcess, (LPCVOID)chunk.baseAddress, pBuffer, chunk.size, &bytesRead)) {
         for (ULONGLONG i = 0; i < bytesRead; i++) {
-            if (memcmp(&pBuffer[i], list_start, 13) == 0) {
-                std::cout << "Found string at address: 0x" << std::hex << (chunk.baseAddress + i) << std::endl;
+            if (!playerList){ 
+                if (!memcmp(&pBuffer[i], list_start, 13)) {
+                    std::cout << "Found playerList at address: 0x" << std::hex << (chunk.baseAddress + i) << std::endl;
+                    playerList = true;
+                }
+            }
+            if (!playerCount){
+                if (!memcmp(&pBuffer[i], count_start, 4)) {
+                    std::cout << "Found playerCount at address: 0x" << std::hex << (chunk.baseAddress + i - 2) << std::endl;
+                    playerCount = true;
+                }
             }
         }
     }
@@ -105,7 +117,7 @@ int main(int argc, char* argv[]) {
 
     //Iterates through the vector of chunks.
     for (int i = 0; i < memoryChunks.size(); i++) {
-        searchMemory(hProcess, list_start, memoryChunks[i]);
+        searchMemory(hProcess, list_start, count_start, memoryChunks[i]);
     }
     
     CloseHandle(hProcess);
