@@ -59,6 +59,12 @@ def enter_password(text):
     except Exception as e:
         print(f"Error: {e}")
 
+def search_player_type(text):
+    for char in text:
+    # Type the character using pyautogui.typewrite()
+        pyautogui.typewrite(char, interval=0)
+    pyautogui.press('enter')
+
 def start_game():
     executable_path = "C:/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn/boot/ffxivboot.exe" 
     try:
