@@ -6,6 +6,7 @@
 
 // Define a constant array of unsigned char to be searched for in memory
 const unsigned char list_start[13] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x95, 0x01, 0x95, 0x01}; //Seraph
+//const unsigned char list_start[13] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x29, 0x00, 0x29, 0x00}; //Mola
 const unsigned char count_start[4] = {0x2F, 0x32, 0x30, 0x30};
 bool playerList = FALSE;
 bool playerCount = FALSE;
@@ -55,7 +56,7 @@ void searchMemory(HANDLE hProcess, const unsigned char (&list_start)[13], const 
             }
             if (!playerCount){
                 if (!memcmp(&pBuffer[i], count_start, 4)) {
-                    std::cout << "Found playerCount at address: 0x" << std::hex << (chunk.baseAddress + i - 2) << std::endl;
+                    std::cout << "Found playerCount at address: 0x" << std::hex << (chunk.baseAddress + i - 4) << std::endl;
                     playerCount = true;
                 }
             }
