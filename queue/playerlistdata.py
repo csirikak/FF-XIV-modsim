@@ -25,7 +25,7 @@ def playerCountfunc(playerCountLocation):
     
     try:
         playerCountOutput.index('/')
-        playerCountOutput = playerCountOutput[0:-2]
+        playerCountOutput = playerCountOutput[0:playerCountOutput.index('/')]
     except ValueError as e:
         pass
 
@@ -54,8 +54,9 @@ playerCountLocation, playerListLocation = startcollecting()
 queuelib.play_sound(440,1000)
 
 for letter in string.ascii_uppercase:
-    search(playerCountLocation,letter,1.5 )
+    search(playerCountLocation,letter,1)
     playerCount = int(playerCountfunc(playerCountLocation))
+    print(letter,playerCount)
     playerListfunc(playerListLocation,letter,playerCount)
 
 queuelib.play_sound(840,1000)
