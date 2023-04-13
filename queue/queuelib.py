@@ -7,6 +7,7 @@ import subprocess
 import time
 import psutil
 import winsound
+import win32clipboard
 
 pytesseract.pytesseract.tesseract_cmd = r'E:/Program Files (x86)/Tesseract-OCR/tesseract.exe'
 
@@ -62,9 +63,9 @@ def enter_password(text):
         print(f"Error: {e}")
 
 def search_player_type(text):
-    for char in text:
-    # Type the character using pyautogui.typewrite()
-        pyautogui.typewrite(char, interval=0)
+    set_clipboard(text)
+    pyautogui.press('/')
+    pyautogui.hotkey('ctrl', 'v')
     pyautogui.press('enter')
 
 def start_game():
@@ -193,3 +194,12 @@ def play_sound(frequency, duration):
         winsound.Beep(frequency, duration)
     except Exception as e:
         print("Error playing sound:", e)
+
+def set_clipboard(text):
+    """
+    Puts the given text into the Windows clipboard.
+    """
+    win32clipboard.OpenClipboard()
+    win32clipboard.EmptyClipboard()
+    win32clipboard.SetClipboardText(text)
+    win32clipboard.CloseClipboard()

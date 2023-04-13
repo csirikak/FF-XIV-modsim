@@ -43,7 +43,7 @@ def playerListfunc(playerListLocation,letter, players):
             file.write(str(item) + '\n')
 
 def search(playerCountLocation,letter,delay):
-    queuelib.search_player_type('/search forename '+letter+' JA EN FR DE')
+    queuelib.search_player_type('search forename '+letter+' JA EN FR DE')
     playerCountold=playerCountfunc(playerCountLocation)
     time.sleep(delay)
     while playerCountold!=playerCountfunc(playerCountLocation):
