@@ -1,6 +1,7 @@
 import queuelib
 import time
 import datetime
+import string
 
 locationSearchPath = '..\playerList\locationSearch.exe'
 playerListPath = '..\playerList\playerList.exe'
@@ -10,6 +11,7 @@ PID = str(queuelib.get_pid_by_name('ffxiv_dx11.exe'))
 
 def startcollecting():
     locationSearchOutput = str(queuelib.run_executable(locationSearchPath, [PID]))
+    print(locationSearchOutput,2)
     playerCountStr = 'Found playerCount at address: '
     playerListStr = 'Found playerList at address: '
     playerCountLocation = locationSearchOutput[locationSearchOutput.index(playerCountStr)+len(playerCountStr):locationSearchOutput.index(playerCountStr)+len(playerCountStr)+13]
@@ -49,7 +51,11 @@ def search(playerCountLocation,letter,delay):
         time.sleep(delay)
 
 playerCountLocation, playerListLocation = startcollecting()
-queuelib.moveandclick([50,50])
-search(playerCountLocation,"B",1.5 )
-playerCount = int(playerCountfunc(playerCountLocation))
-playerListfunc(playerListLocation,"B",playerCount)
+queuelib.play_sound(440,1000)
+
+for letter in string.ascii_uppercase:
+    search(playerCountLocation,letter,1.5 )
+    playerCount = int(playerCountfunc(playerCountLocation))
+    playerListfunc(playerListLocation,letter,playerCount)
+
+queuelib.play_sound(840,1000)

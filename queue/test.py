@@ -2,4 +2,4 @@ import queuelib
 import time
 
 time.sleep(1)
-queuelib.findcursor()
+queuelib.play_sound(440,1000)
