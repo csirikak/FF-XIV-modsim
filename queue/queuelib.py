@@ -6,6 +6,7 @@ import pyautogui
 import subprocess
 import time
 import psutil
+import string
 
 pytesseract.pytesseract.tesseract_cmd = r'E:/Program Files (x86)/Tesseract-OCR/tesseract.exe'
 
@@ -183,8 +184,3 @@ def get_pid_by_name(process_name):
         if proc.info['name'].lower() == process_name.lower():
             return proc.info['pid']
     return None
-
-#findcursor()
-#letslopp()
-#print(screen_id())
-#write_string_to_file(get_text_from_screen())
