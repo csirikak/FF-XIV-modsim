@@ -1,13 +1,15 @@
 import os
 import string
+import datetime
 
-directory = "../queue/data/" # Replace this with your directory path
+directory = "C:/Users/n_j/Desktop/data2" # Replace this with your directory path
+playSessionFilePath = "sessions.txt"
 
 # Get all files in the directory
 files = os.listdir(directory)
 
 # Sort files by their creation time
-files.sort(key=lambda x: os.path.getctime(os.path.join(directory, x)))
+files.sort(key=lambda x: os.path.getmtime(os.path.join(directory, x)))
 
 nameMap = {}
 playTimeMap = {}
@@ -15,7 +17,7 @@ playTimeMap = {}
 for letter in string.ascii_uppercase:
     nameMap[ord(letter)-65] = {}
 
-
+playSessionFile = open(playSessionFilePath, "x")
 # Loop through the files in the sorted order
 for filename in files:
     with open(os.path.join(directory, filename), 'r') as file:
@@ -33,26 +35,32 @@ for filename in files:
                 nameMap[ord(letter[0])-65][line] = 0
 
         else:
-            creation_time = round(os.path.getctime(os.path.join(directory, filename)))
+            lastFile = open(os.path.join(directory, str(int(filename[0:filename.index('-')])-1)+filename[filename.index('-'):]), 'r')
+            lastFileLines = lastFile.readlines()
+            lastFileLines = [line.strip() for line in lastFileLines]
+            creation_time = round(os.path.getmtime(os.path.join(directory, filename)))
+            print(datetime.datetime.fromtimestamp(creation_time))
             letterNameDict = nameMap[ord(letter[0])-65].copy()
             letterNameDictTemp = letterNameDict.copy()
 
             for line in fileLines:
                 if line not in letterNameDict:
                     nameMap[ord(letter[0])-65][line] = creation_time
-                    letterNameDictTemp[line] = True
-            letterNameDict = letterNameDictTemp
+                letterNameDictTemp[line] = True
+            letterNameDict = letterNameDictTemp.copy()
             del(letterNameDictTemp)
 
             for line in letterNameDict:
                 joinTime = nameMap[ord(letter[0])-65][line]
-                if (line not in fileLines):
+                if (line not in fileLines ) & (line not in lastFileLines):
                     if (joinTime != 0):
                         play_time = round(creation_time - joinTime)
+                        #playSessionFile.write(str(joinTime)+"-"+str(creation_time)+"\n")
                         try:
                             playTimeMap[play_time] += 1
                         except:
                             playTimeMap[play_time] = 1
                     del(nameMap[ord(letter[0])-65][line])
 
-print(playTimeMap)
+for value in playTimeMap:
+    playSessionFile.write(str(value)+" "+str(playTimeMap[value])+"\n")
