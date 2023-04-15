@@ -51,12 +51,23 @@ def search(playerCountLocation,letter,delay):
         time.sleep(delay)
 
 playerCountLocation, playerListLocation = startcollecting()
+
 queuelib.play_sound(440,1000)
 
-for letter in string.ascii_uppercase:
-    search(playerCountLocation,letter,1)
-    playerCount = int(playerCountfunc(playerCountLocation))
-    print(letter,playerCount)
-    playerListfunc(playerListLocation,letter,playerCount)
 
-queuelib.play_sound(840,1000)
+while True:
+
+    queuelib.play_sound(880,1000)
+
+    start_time = time.time()
+
+    for letter in string.ascii_uppercase:
+        search(playerCountLocation,letter,1)
+        playerCount = int(playerCountfunc(playerCountLocation))
+        playerListfunc(playerListLocation,letter,playerCount)
+
+    end_time = time.time()
+
+    print("Elapsed time: {} seconds".format(end_time-start_time))
+
+    queuelib.play_sound(1760,1000)

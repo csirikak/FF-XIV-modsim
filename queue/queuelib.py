@@ -64,8 +64,8 @@ def enter_password(text):
 
 def search_player_type(text):
     set_clipboard(text)
-    pyautogui.press('/')
-    pyautogui.hotkey('ctrl', 'v')
+    pyautogui.press('/',interval=0.1)
+    pyautogui.hotkey('ctrl', 'v', interval=0.1)
     pyautogui.press('enter')
 
 def start_game():
