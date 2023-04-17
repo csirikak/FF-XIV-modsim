@@ -8,6 +8,9 @@ import time
 import psutil
 import winsound
 import win32clipboard
+import win32gui
+import win32process
+import win32con
 
 pytesseract.pytesseract.tesseract_cmd = r'E:/Program Files (x86)/Tesseract-OCR/tesseract.exe'
 
@@ -24,8 +27,8 @@ def run_executable(executable_path, arguments):
         stdout, stderr = process.communicate()
 
         # Decode stdout and stderr from bytes to string
-        stdout = stdout.decode('utf-8')
-        stderr = stderr.decode('utf-8')
+        stdout = stdout.decode('utf-8', errors='ignore')
+        stderr = stderr.decode('utf-8', errors='ignore')
 
         return stdout, stderr
     except Exception as e:
@@ -203,3 +206,25 @@ def set_clipboard(text):
     win32clipboard.EmptyClipboard()
     win32clipboard.SetClipboardText(text)
     win32clipboard.CloseClipboard()
+
+def bring_process_to_foreground(pid):
+    """
+    Brings the process with the given PID to the foreground.
+    Returns True if successful, False otherwise.
+    """
+    try:
+        # Get the main window handle for the process
+        handle = win32process.GetWindowThreadProcessId(pid)[0]
+        window = win32gui.FindWindowEx(None, None, None, None)
+        while window:
+            if (win32process.GetWindowThreadProcessId(window)[1] == pid) & (win32gui.GetWindow(window, win32con.GW_OWNER) == 0):
+                handle = window
+                break
+            window = win32gui.FindWindowEx(None, window, None, None)
+        # Bring the window to the foreground
+        win32gui.SetForegroundWindow(handle)
+        win32gui.SetActiveWindow(handle)
+        win32gui.SetFocus(handle)
+        return True
+    except:
+        return False

@@ -51,12 +51,12 @@ BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege) {
 
 //Prints the number of players in list given the memory address
 void printCount(HANDLE hProcess, ULONGLONG memAddressLocation){
-    char* pBuffer = new char[4];
+    char* pBuffer = new char[8];
     SIZE_T bytesRead = 0;
     std::cout << "Printing list at: 0x" << std::hex << std::setw(16) << std::setfill('0') << memAddressLocation << std::endl;
-    if (ReadProcessMemory(hProcess, (LPCVOID)memAddressLocation, pBuffer, 4, &bytesRead)) {
+    if (ReadProcessMemory(hProcess, (LPCVOID)memAddressLocation, pBuffer, 8, &bytesRead)) {
         char* outputPtr = &pBuffer[0];
-        for (u_int u = 0; u<4; u++){
+        for (u_int u = 0; u<8; u++){
             std::cout << *outputPtr;
             outputPtr++;
         }
