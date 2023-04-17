@@ -4,6 +4,7 @@ import datetime
 
 directory = "C:/Users/n_j/Desktop/data2" # Replace this with your directory path
 playSessionFilePath = "sessions.txt"
+filterErrors = False # Requires names to be missing from past 2 searches
 
 # Get all files in the directory
 files = os.listdir(directory)
@@ -35,11 +36,13 @@ for filename in files:
                 nameMap[ord(letter[0])-65][line] = 0
 
         else:
-            lastFile = open(os.path.join(directory, str(int(filename[0:filename.index('-')])-1)+filename[filename.index('-'):]), 'r')
-            lastFileLines = lastFile.readlines()
-            lastFileLines = [line.strip() for line in lastFileLines]
+            if filterErrors:
+                lastFile = open(os.path.join(directory, str(int(filename[0:filename.index('-')])-1)+filename[filename.index('-'):]), 'r')
+                lastFileLines = lastFile.readlines()
+                lastFileLines = [line.strip() for line in lastFileLines]
+            else:
+                lastFileLines = ''
             creation_time = round(os.path.getmtime(os.path.join(directory, filename)))
-            print(datetime.datetime.fromtimestamp(creation_time))
             letterNameDict = nameMap[ord(letter[0])-65].copy()
             letterNameDictTemp = letterNameDict.copy()
 
@@ -52,7 +55,7 @@ for filename in files:
 
             for line in letterNameDict:
                 joinTime = nameMap[ord(letter[0])-65][line]
-                if (line not in fileLines ) & (line not in lastFileLines):
+                if (line not in fileLines ) & ((filterErrors & (line not in lastFileLines)) | (~filterErrors)):
                     if (joinTime != 0):
                         play_time = round(creation_time - joinTime)
                         #playSessionFile.write(str(joinTime)+"-"+str(creation_time)+"\n")
