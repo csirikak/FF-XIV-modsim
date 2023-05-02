@@ -6,13 +6,14 @@ from fitter import Fitter
 # Load data from txt file
 data = np.loadtxt('sessions.txt')
 
-# Convert data to a Pandas DataFrame
+'''# Convert data to a Pandas DataFrame
 df = pd.DataFrame({'x': data[:,0], 'count': data[:,1]})
 
 # Generate random data using the frequency of each value
 data = []
 for i in range(len(df)):
-    data += [df['x'][i]] * int(df['count'][i])
+    data += [df['x'][i]] * int(df['count'][i])'''
+
 
 # Fit various distributions to the data using the Fitter package
 f = Fitter(data)
