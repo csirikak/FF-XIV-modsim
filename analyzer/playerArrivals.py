@@ -2,7 +2,7 @@ import os
 import string
 
 directory = "C:/Users/n_j/Downloads/ffxivdata" # Replace this with your directory path
-playSessionFilePath = "sessions.txt"
+playSessionFilePath = "arrivalRates.txt"
 
 # Get all files in the directory
 files = os.listdir(directory)
@@ -11,9 +11,9 @@ files = os.listdir(directory)
 files.sort(key=lambda x: os.path.getmtime(os.path.join(directory, x)))
 
 nameMap = {}
-playTimeMap = {}
 arrival = 0
 oldSearchCount = 0
+lastCreationTime = 0
 
 for letter in string.ascii_uppercase:
     nameMap[ord(letter)-65] = {}
@@ -40,29 +40,23 @@ for filename in files:
             letterNameDict = nameMap[ord(letter[0])-65].copy()
             letterNameDictTemp = letterNameDict.copy()
 
-            if (filename[0:filename.index('-')]  != oldSearchCount):
+            if (filename[0:filename.index('-')] != oldSearchCount):
                 oldSearchCount = filename[0:filename.index('-')]
-                playSessionFile.write(str(oldSearchCount)+ " " + arrival)
+                playSessionFile.write(str(creation_time - lastCreationTime)+ " " + str(arrival)+"\n")
+                lastCreationTime = creation_time
                 arrival = 0
 
             for line in fileLines:
                 if line not in letterNameDict:
                     nameMap[ord(letter[0])-65][line] = creation_time
                     arrival += 1
-
                 letterNameDictTemp[line] = True
+
             letterNameDict = letterNameDictTemp.copy()
             del(letterNameDictTemp)
 
             for line in letterNameDict:
                 joinTime = nameMap[ord(letter[0])-65][line]
                 if (line not in fileLines ):
-                    if (joinTime != 0):
-                        play_time = round(creation_time - joinTime)
-                        playSessionFile.write(str(joinTime)+" "+str(creation_time)+"\n")
-                        try:
-                            playTimeMap[play_time] += 1
-                        except:
-                            playTimeMap[play_time] = 1
                     del(nameMap[ord(letter[0])-65][line])
 

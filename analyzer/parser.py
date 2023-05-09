@@ -2,7 +2,7 @@ import os
 import string
 import datetime
 
-directory = "C:/Users/n_j/Desktop/data" # Replace this with your directory path
+directory = "C:/Users/n_j/Downloads/ffxivdata" # Replace this with your directory path
 playSessionFilePath = "sessions.txt"
 filterErrors = False # Requires names to be missing from past 2 searches
 
@@ -63,15 +63,15 @@ for filename in files:
                 if (line not in fileLines ) & ((filterErrors & (line not in lastFileLines)) | (~filterErrors)):
                     if (joinTime != 0):
                         play_time = round(creation_time - joinTime)
-                        playSessionFile.write(str(joinTime)+" "+str(creation_time)+"\n")
+                        #playSessionFile.write(str(joinTime)+" "+str(creation_time)+"\n")
                         try:
                             playTimeMap[play_time] += 1
                         except:
                             playTimeMap[play_time] = 1
                     del(nameMap[ord(letter[0])-65][line])
 
-'''for value in playTimeMap:
-    playSessionFile.write(str(value)+" "+str(playTimeMap[value])+"\n")'''
+for value in playTimeMap:
+    playSessionFile.write(str(value)+" "+str(playTimeMap[value])+"\n")
 """print(creation_time, initialCreation)
 print(arrival/(creation_time-initialCreation))
 """
